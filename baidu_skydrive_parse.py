@@ -69,10 +69,10 @@ class BaiduParser(object):
 
         resp = self.sess.post(verify_url, data=data, params=payload, headers=self.headers)
         js = json.loads(resp.text)
-        if js['errno'] != 0:    # 文件密码错误
-            return False
-        else:                   # 密码正确
+        if js['errno'] == 0:
             return True
+        else:
+            return False
 
     def get_params(self, link):  # 重新载入页面来获取后面所需的参数
         resp = self.sess.get(link, headers=self.headers)
@@ -121,8 +121,8 @@ class BaiduParser(object):
     def sharedownload(self, link):  # 无验证码的情况
         api_url = 'http://pan.baidu.com/api/sharedownload'
         payload = {
-            'sign': self.sign,  # ok
-            'timestamp': self.timestamp, # ok
+            'sign': self.sign,
+            'timestamp': self.timestamp,
             'bdstoken': 'null',
             'channel': 'chunlei',
             'clienttype': '0',
@@ -207,9 +207,3 @@ if __name__ == '__main__':
     link = 'https://pan.baidu.com/s/1xxxx'      # 私密分享文件的链接
     pwd = 'xxxxxx'                                  # 提取密码
     baidu.get_download_link(link, pwd)
-
-
-
-
-
-
