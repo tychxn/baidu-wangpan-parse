@@ -1,4 +1,4 @@
-# 百度网盘私密分享直链获取
+# 百度网盘私密分享下载链接解析
 ## 功能
 - 获取百度网盘分享文件的真实下载链接。
 - 将获取到的下载链接复制到[IDM](http://www.internetdownloadmanager.com/)、[FDM](http://www.internetdownloadmanager.com/)等下载器即可实现高速下载，避免使用百度网盘客户端。
