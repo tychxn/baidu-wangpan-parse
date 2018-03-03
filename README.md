@@ -1,25 +1,57 @@
-# 百度网盘私密分享下载链接解析
-## 功能
-- 获取百度网盘分享文件的真实下载链接。
-- 将获取到的下载链接复制到[IDM](http://www.internetdownloadmanager.com/)、[FDM](http://www.internetdownloadmanager.com/)等下载器即可实现高速下载，避免使用百度网盘客户端。
+# 百度网盘分享文件下载链接解析
 
-## 环境
+## 功能
+
+- 获取百度网盘分享文件的真实下载地址
+- 将获取到的下载链接复制到[IDM](http://www.internetdownloadmanager.com/)、[FDM](http://www.internetdownloadmanager.com/)等下载器即可实现高速下载，避免使用百度网盘客户端
+
+## 运行环境
+
 - Python 2.7
 
+## 第三方库
+
+- [Requests](http://docs.python-requests.org/en/master/)
+
+
 ## 使用帮助
+
 ```sh
 $ python baidu_wangpan_parse.py -h
-usage: baidu_wangpan_parse.py [-h] -l LINK -p PASSWORD
+usage: baidu_wangpan_parse.py [-h] -e [ENCRYPT] -l LINK [-p PASSWORD]
 
 Get Baidu wangpan private sharing file download link.
 
 optional arguments:
   -h, --help            show this help message and exit
+  -e [ENCRYPT], --encrypt [ENCRYPT]
+                        Whether sharing file is encrypted，input should be
+                        either "true" or "false"
   -l LINK, --link LINK  Baidu wangpan sharing file link
   -p PASSWORD, --password PASSWORD
                         Baidu wangpan sharing file password
 ```
 
+## 使用实例
+
+获取没有加密文件的下载地址：
+```sh
+$ python baidu_wangpan_parse.py  -e false -l https://pan.baidu.com/s/1dG1NCeH
+Filename：Python编程实践.pdf
+Download link：http://d.pcs.baidu.com/file/8192bee674d4fa51327b4fcd48419527?fid=271812880-250528-1043814616287203&time=1520084684&rt=sh&sign=FDTAERV-DCb740ccc5511e5e8fedcff06b081203-yNPeLZ6nlAnXIkJCc65h5%2BXyo7o%3D&expires=8h&chkv=1&chkbd=0&chkpc=&dp-logid=1435776569022977819&dp-callid=0&r=908173079
+Size：64.938148MB
+```
+
+获取加密文件的下载地址：
+```sh
+$ python baidu_wangpan_parse.py -e true -l https://pan.baidu.com/s/1qZbIVP6 -p xa27
+Filename：鸟哥的Linux私房菜-基础篇.第四版.pdf
+Download link：http://d.pcs.baidu.com/file/db0be336c157d7cd2e1368c7a80833d6?fid=1708072416-250528-674694471059199&time=1520085857&rt=sh&sign=FDTAERV-DCb740ccc5511e5e8fedcff06b081203-GKPsyNzU2hRIFkk20A9uLuqYh10%3D&expires=8h&chkv=1&chkbd=0&chkpc=&dp-logid=1436091295408590002&dp-callid=0&r=130087421
+Size：32.514175MB
+```
+
 ## 备注
-- 只能解析私密分享文件（带密码）的下载地址
 - 只能解析单个分享的文件下载地址，不能解析文件夹下载地址
+
+## Todo
+- 解析文件夹的下载地址

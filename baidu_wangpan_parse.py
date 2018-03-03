@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 '''
-    python解析百度云私密分享文件下载链接
-    （只能解析单个私密文件下载地址，不能解析文件夹下载地址）
+    python解析百度云分享文件下载链接
+    （只能解析单个分享文件下载地址，不能解析文件夹下载地址）
     基于python2.7
 '''
 
@@ -132,7 +132,7 @@ class BaiduWangpan(object):
 
         self.verifyCodeInput = str(raw_input(u'Please enter the verification code (return change):'))
 
-    def downloadResp(self, link, needVerify=False):
+    def downloadResp(self, isEncrypt, link, needVerify=False):
         url = 'http://pan.baidu.com/api/sharedownload'
         payload = {
             'sign': self.sign,
@@ -143,35 +143,39 @@ class BaiduWangpan(object):
             'web': '1',
             'app_id': '250528',
         }
-        self.extra = '{"sekey":"' + urllib.unquote(self.sess.cookies['BDCLND']) + '"}'
+
         data = {
             'encrypt': '0',
             'product': 'share',
             'type': 'nolimit',
-            'extra': self.extra,
             'uk': self.uk,
             'primaryid': self.primaryId,
             'fid_list': self.fidList,
         }
 
-        if needVerify:
+        if isEncrypt:
+            self.extra = '{"sekey":"' + urllib.unquote(self.sess.cookies['BDCLND']) + '"}'
+            data['extra'] = self.extra
+
+        if needVerify:  # 需要验证码
             data['vcode_input'] = self.verifyCodeInput
             data['vcode_str'] = self.verifyCodeStr
 
         resp = self.sess.post(url, data=data, params=payload, headers=self.headers)
         return json.loads(resp.text)
 
-    def getDownloadURL(self, link, pwd):
+    def getDownloadURL(self, isEncrypt, link, password):
         try:
             self.getBaiduCookie()  # 初始化cookie
 
-            if not self.verifyPassword(link, pwd):  # 验证文件密码
-                print u'Sharing file password error!'
-                return
+            if isEncrypt:
+                if not self.verifyPassword(link, password):  # 验证文件密码
+                    print u'Sharing file password error!'
+                    return
 
             self.getParams(link)  # 密码验证成功后，获取网页的参数
 
-            js = self.downloadResp(link, needVerify=False)  # 第一次尝试获取下载链接
+            js = self.downloadResp(isEncrypt=isEncrypt, link=link, needVerify=False)  # 第一次尝试获取下载链接
             while True:
                 if js['errno'] == 0:  # 获取下载链接成功
                     print u'Filename：' + js['list'][0]['server_filename']
@@ -180,7 +184,7 @@ class BaiduWangpan(object):
                     break
                 elif js['errno'] == -20:  # 需要验证码
                     self.getVerifyCode(link)
-                    js = self.downloadResp(link, needVerify=True)
+                    js = self.downloadResp(isEncrypt=isEncrypt, link=link, needVerify=True)
                 else:
                     print u'Unknown error, the error code is as follows:'
                     print js
@@ -189,14 +193,27 @@ class BaiduWangpan(object):
             print 'Exception:', e
             raise
 
+def str2bool(v):
+    if v.lower() in ('true', 'yes', 't', 'y'):
+        return True
+    elif v.lower() in ('false', 'no', 'f', 'n'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Unsupported value encountered.')
+
+def main(options):
+    baiduWangpan = BaiduWangpan()
+    baiduWangpan.getDownloadURL(isEncrypt=options.encrypt, link=options.link, password=options.password)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Get Baidu wangpan private sharing file download link.')
+    parser.add_argument('-e', '--encrypt',
+                       help='Whether sharing file is encrypted，input should be either "true" or "false"', 
+                       type=str2bool, const=True, nargs='?', required=True)
     parser.add_argument('-l', '--link',
                        help='Baidu wangpan sharing file link', required=True)
     parser.add_argument('-p', '--password',
-                       help='Baidu wangpan sharing file password', required=True)
+                       help='Baidu wangpan sharing file password')
     options = parser.parse_args()
 
-    baiduWangpan = BaiduWangpan()
-    baiduWangpan.getDownloadURL(options.link, options.password)
+    main(options)
