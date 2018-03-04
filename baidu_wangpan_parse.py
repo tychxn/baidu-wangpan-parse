@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 '''
-    python解析百度云分享文件下载链接
+    Python解析百度云分享文件下载链接
     （只能解析单个分享文件下载地址，不能解析文件夹下载地址）
-    基于python2.7
+    基于Python2.7
 '''
 
 import requests
@@ -24,7 +24,11 @@ sys.setdefaultencoding('utf-8')
 
 class BaiduWangpan(object):
 
-    def __init__(self):
+    def __init__(self, isEncrypt, link, password):
+        self.isEncrypt = isEncrypt
+        self.link = link
+        self.password = password
+
         self.sess = requests.Session()
         self.primaryId = ""
         self.uk = ""
@@ -33,7 +37,6 @@ class BaiduWangpan(object):
         self.fidList = ""
         self.verifyCodeStr = ""
         self.verifyCodeInput = ""
-        self.extra = ""
         self.headers = {
             'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/601.2.7 (KHTML, like Gecko) Version/9.0.1 Safari/601.2.7',
             'Host': 'pan.baidu.com',
@@ -41,13 +44,12 @@ class BaiduWangpan(object):
         }
 
     def getBaiduCookie(self):    # 初始化cookie
-        url = 'http://pan.baidu.com'
-        self.sess.get(url, headers=self.headers)
+        self.sess.get(url='http://pan.baidu.com', headers=self.headers)
 
-    def verifyPassword(self, link, password):  # post文件密码用于验证
+    def verifyPassword(self):  # post文件密码用于验证
         url = 'https://pan.baidu.com/share/verify'
 
-        match = re.match(r'http[s]?://pan.baidu.com/s/1(.*)', link)
+        match = re.match(r'http[s]?://pan.baidu.com/s/1(.*)', self.link)
         if not match:
             print u'Link match error!'
             return False
@@ -63,22 +65,22 @@ class BaiduWangpan(object):
             'app_id': '250528',
         }
         data = {
-            'pwd': password,
+            'pwd': self.password,
             'vcode': '',
             'vcode_str': '',
         }
 
-        self.headers['Referer'] = link
+        self.headers['Referer'] = self.link
 
-        resp = self.sess.post(url, data=data, params=payload, headers=self.headers)
+        resp = self.sess.post(url=url, data=data, params=payload, headers=self.headers)
         js = json.loads(resp.text)
         if js['errno'] == 0:
             return True
         else:
             return False
 
-    def getParams(self, link):  # 重新载入页面来获取后面所需的参数
-        resp = self.sess.get(link, headers=self.headers)
+    def getParams(self):  # 重新载入页面来获取后面所需的参数
+        resp = self.sess.get(self.link, headers=self.headers)
         resp.encoding = 'utf-8'
 
         # 读取页面中的参数
@@ -93,7 +95,7 @@ class BaiduWangpan(object):
         m = re.search('\"fs_id\":(.+?),\"', resp.text)
         self.fidList = '[' + m.group(1) + ']'
 
-    def getVerifyCode(self, link):  # 获取验证码并要求输入
+    def getVerifyCode(self):  # 获取验证码并要求输入
         print u'Start downloading the verification code...'
 
         url = "http://pan.baidu.com/api/getvcode"
@@ -107,7 +109,7 @@ class BaiduWangpan(object):
             'app_id': '250528',
         }
 
-        resp = self.sess.get(url, params=payload, headers=self.headers)
+        resp = self.sess.get(url=url, params=payload, headers=self.headers)
         js = json.loads(resp.text)
         self.verifyCodeStr = js['vcode']
 
@@ -132,7 +134,7 @@ class BaiduWangpan(object):
 
         self.verifyCodeInput = str(raw_input(u'Please enter the verification code (return change):'))
 
-    def downloadResp(self, isEncrypt, link, needVerify=False):
+    def downloadResp(self, needVerify=False):
         url = 'http://pan.baidu.com/api/sharedownload'
         payload = {
             'sign': self.sign,
@@ -153,29 +155,28 @@ class BaiduWangpan(object):
             'fid_list': self.fidList,
         }
 
-        if isEncrypt:
-            self.extra = '{"sekey":"' + urllib.unquote(self.sess.cookies['BDCLND']) + '"}'
-            data['extra'] = self.extra
+        if self.isEncrypt:
+            data['extra'] = '{"sekey":"' + urllib.unquote(self.sess.cookies['BDCLND']) + '"}'
 
         if needVerify:  # 需要验证码
             data['vcode_input'] = self.verifyCodeInput
             data['vcode_str'] = self.verifyCodeStr
 
-        resp = self.sess.post(url, data=data, params=payload, headers=self.headers)
+        resp = self.sess.post(url=url, params=payload, data=data, headers=self.headers)
         return json.loads(resp.text)
 
-    def getDownloadURL(self, isEncrypt, link, password):
+    def getDownloadURL(self):
         try:
             self.getBaiduCookie()  # 初始化cookie
 
-            if isEncrypt:
-                if not self.verifyPassword(link, password):  # 验证文件密码
+            if self.isEncrypt:
+                if not self.verifyPassword():  # 验证文件密码
                     print u'Sharing file password error!'
                     return
 
-            self.getParams(link)  # 密码验证成功后，获取网页的参数
+            self.getParams()  # 密码验证成功后，获取网页的参数
 
-            js = self.downloadResp(isEncrypt=isEncrypt, link=link, needVerify=False)  # 第一次尝试获取下载链接
+            js = self.downloadResp(needVerify=False)  # 第一次尝试获取下载链接
             while True:
                 if js['errno'] == 0:  # 获取下载链接成功
                     print u'Filename：' + js['list'][0]['server_filename']
@@ -183,8 +184,8 @@ class BaiduWangpan(object):
                     print u'Size：' + str(js['list'][0]['size']/1000000.0) + 'MB'
                     break
                 elif js['errno'] == -20:  # 需要验证码
-                    self.getVerifyCode(link)
-                    js = self.downloadResp(isEncrypt=isEncrypt, link=link, needVerify=True)
+                    self.getVerifyCode()
+                    js = self.downloadResp(needVerify=True)
                 else:
                     print u'Unknown error, the error code is as follows:'
                     print js
@@ -202,8 +203,8 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Unsupported value encountered.')
 
 def main(options):
-    baiduWangpan = BaiduWangpan()
-    baiduWangpan.getDownloadURL(isEncrypt=options.encrypt, link=options.link, password=options.password)
+    baiduWangpan = BaiduWangpan(isEncrypt=options.encrypt, link=options.link, password=options.password)
+    baiduWangpan.getDownloadURL()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Get Baidu wangpan private sharing file download link.')
