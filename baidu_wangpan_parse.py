@@ -3,7 +3,6 @@
 
 '''
     Python解析百度云分享文件下载链接
-    （只能解析单个分享文件下载地址，不能解析文件夹下载地址）
     基于Python2.7
 '''
 
@@ -24,8 +23,9 @@ sys.setdefaultencoding('utf-8')
 
 class BaiduWangpan(object):
 
-    def __init__(self, isEncrypt, link, password):
+    def __init__(self, isEncrypt, isFolder, link, password):
         self.isEncrypt = isEncrypt
+        self.isFolder = isFolder
         self.link = link
         self.password = password
 
@@ -155,6 +155,9 @@ class BaiduWangpan(object):
             'fid_list': self.fidList,
         }
 
+        if self.isFolder:
+            data['type'] = 'batch'
+
         if self.isEncrypt:
             data['extra'] = '{"sekey":"' + urllib.unquote(self.sess.cookies['BDCLND']) + '"}'
 
@@ -179,9 +182,12 @@ class BaiduWangpan(object):
             js = self.downloadResp(needVerify=False)  # 第一次尝试获取下载链接
             while True:
                 if js['errno'] == 0:  # 获取下载链接成功
-                    print u'Filename：' + js['list'][0]['server_filename']
-                    print u'Download link：' + js["list"][0]['dlink']
-                    print u'Size：' + str(js['list'][0]['size']/1000000.0) + 'MB'
+                    if not self.isFolder:
+                        print u'Filename：' + js['list'][0]['server_filename']
+                        print u'Download link：' + js["list"][0]['dlink']
+                        print u'Size：' + str(js['list'][0]['size']/1000000.0) + 'MB'
+                    else:
+                        print js['dlink']
                     break
                 elif js['errno'] == -20:  # 需要验证码
                     self.getVerifyCode()
@@ -203,11 +209,17 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Unsupported value encountered.')
 
 def main(options):
-    baiduWangpan = BaiduWangpan(isEncrypt=options.encrypt, link=options.link, password=options.password)
+    baiduWangpan = BaiduWangpan(isEncrypt=options.encrypt,
+                                isFolder=options.folder,
+                                link=options.link,
+                                password=options.password)
     baiduWangpan.getDownloadURL()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Get Baidu wangpan private sharing file download link.')
+    parser.add_argument('-f', '--folder',
+                        help='Whether the sharing is a folder，input should be either "true" or "false"',
+                        type=str2bool, const=True, nargs='?', required=True)
     parser.add_argument('-e', '--encrypt',
                        help='Whether sharing file is encrypted，input should be either "true" or "false"', 
                        type=str2bool, const=True, nargs='?', required=True)
