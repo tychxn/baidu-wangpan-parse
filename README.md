@@ -63,6 +63,10 @@ $ python baidu_wangpan_parse.py -f true -e true -l https://pan.baidu.com/s/1htWj
 http://www.baidupcs.com/rest/2.0/pcs/file?method=batchdownload&app_id=250528&zipcontent=%7B%22fs_id%22%3A%5B%22680498123896117%22%5D%7D&sign=DCb740ccc5511e5e8fedcff06b081203:XVWOmwcvFUuF%2BaingRW1tMuLJ4w%3D&uid=1708072416&time=1520268935&dp-logid=1462043150724484943&dp-callid=0&from_uk=1708072416
 ```
 
+## 常见问题
+
+文件打包下载后解压时提示`头部错误`， 解压失败。这个问题多发于`7-Zip`解压，换用`WinRAR`即可解压成功。
+
 ## Todo
 
 - 解析文件夹的下载地址同时获取zip压缩包名字以及大小
