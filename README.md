@@ -5,6 +5,8 @@
 - 获取百度网盘分享文件的真实下载地址
 - 将获取到的下载链接复制到[IDM](http://www.internetdownloadmanager.com/)、[FDM](https://www.freedownloadmanager.org/)等下载器即可实现高速下载，避免使用百度网盘客户端
 
+![](./img/IDM_download.jpg "IDM下载")
+
 ## 运行环境
 
 - Python 2.7
