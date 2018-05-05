@@ -72,3 +72,4 @@ http://www.baidupcs.com/rest/2.0/pcs/file?method=batchdownload&app_id=250528&zip
 ## Todo
 
 - 解析文件夹的下载地址同时获取zip压缩包名字以及大小
+- 精简命令行参数，实现自动识别下载内容是单文件/文件夹，加密/未加密。
