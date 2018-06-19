@@ -40,17 +40,13 @@ optional arguments:
 1.获取没有加密的单个文件的下载地址：
 ```sh
 $ python baidu_wangpan_parse.py -f false -e false -l https://pan.baidu.com/s/1dG1NCeH
-Filename：Python编程实践.pdf
-Download link：http://d.pcs.baidu.com/file/8192bee674d4fa51327b4fcd48419527?fid=271812880-250528-1043814616287203&time=1520084684&rt=sh&sign=FDTAERV-DCb740ccc5511e5e8fedcff06b081203-yNPeLZ6nlAnXIkJCc65h5%2BXyo7o%3D&expires=8h&chkv=1&chkbd=0&chkpc=&dp-logid=1435776569022977819&dp-callid=0&r=908173079
-Size：64.938148MB
+http://d.pcs.baidu.com/file/8192bee674d4fa51327b4fcd48419527?fid=271812880-250528-1043814616287203&time=1520084684&rt=sh&sign=FDTAERV-DCb740ccc5511e5e8fedcff06b081203-yNPeLZ6nlAnXIkJCc65h5%2BXyo7o%3D&expires=8h&chkv=1&chkbd=0&chkpc=&dp-logid=1435776569022977819&dp-callid=0&r=908173079
 ```
 
 2.获取加密的单个文件的下载地址：
 ```sh
 $ python baidu_wangpan_parse.py -f false -e true -l https://pan.baidu.com/s/1qZbIVP6 -p xa27
-Filename：鸟哥的Linux私房菜-基础篇.第四版.pdf
-Download link：http://d.pcs.baidu.com/file/db0be336c157d7cd2e1368c7a80833d6?fid=1708072416-250528-674694471059199&time=1520085857&rt=sh&sign=FDTAERV-DCb740ccc5511e5e8fedcff06b081203-GKPsyNzU2hRIFkk20A9uLuqYh10%3D&expires=8h&chkv=1&chkbd=0&chkpc=&dp-logid=1436091295408590002&dp-callid=0&r=130087421
-Size：32.514175MB
+http://d.pcs.baidu.com/file/db0be336c157d7cd2e1368c7a80833d6?fid=1708072416-250528-674694471059199&time=1520085857&rt=sh&sign=FDTAERV-DCb740ccc5511e5e8fedcff06b081203-GKPsyNzU2hRIFkk20A9uLuqYh10%3D&expires=8h&chkv=1&chkbd=0&chkpc=&dp-logid=1436091295408590002&dp-callid=0&r=130087421
 ```
 
 3.获取没有加密的文件夹的打包下载地址
