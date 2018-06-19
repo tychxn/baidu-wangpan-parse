@@ -6,15 +6,15 @@
     基于Python2.7
 '''
 
-import requests
-
-import re
+import os
 import time
+import re
 import json
 import random
-import os
 import urllib
 import argparse
+
+import requests
 
 import sys
 reload(sys)
@@ -38,23 +38,22 @@ class BaiduWangpan(object):
         self.verifyCodeStr = ""
         self.verifyCodeInput = ""
         self.headers = {
-            'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/601.2.7 (KHTML, like Gecko) Version/9.0.1 Safari/601.2.7',
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/601.2.7 (KHTML, like Gecko) Version/9.0.1 Safari/601.2.7',
             'Host': 'pan.baidu.com',
-            'Origin': 'https://pan.baidu.com'
+            'Origin': 'https://pan.baidu.com',
         }
 
-    def getBaiduCookie(self):    # 初始化cookie
+    def initCookie(self):  # init cookies
         self.sess.get(url='http://pan.baidu.com', headers=self.headers)
 
-    def verifyPassword(self):  # post文件密码用于验证
-        url = 'https://pan.baidu.com/share/verify'
-
+    def verifyPassword(self):  # verify file password
         match = re.match(r'http[s]?://pan.baidu.com/s/1(.*)', self.link)
         if not match:
             print u'Link match error!'
             return False
-        surl = match.group(1)
 
+        url = 'https://pan.baidu.com/share/verify'
+        surl = match.group(1)
         payload = {
             'surl': surl,
             't': '%d' % (time.time() * 1000),
@@ -69,21 +68,14 @@ class BaiduWangpan(object):
             'vcode': '',
             'vcode_str': '',
         }
-
         self.headers['Referer'] = self.link
-
         resp = self.sess.post(url=url, data=data, params=payload, headers=self.headers)
         js = json.loads(resp.text)
-        if js['errno'] == 0:
-            return True
-        else:
-            return False
+        return True if js['errno'] == 0 else False
 
-    def getParams(self):  # 重新载入页面来获取后面所需的参数
+    def getParams(self):  # reload the page to get the parameters needed later
         resp = self.sess.get(self.link, headers=self.headers)
         resp.encoding = 'utf-8'
-
-        # 读取页面中的参数
         m = re.search('\"sign\":\"(.+?)\"', resp.text)
         self.sign = m.group(1)
         m = re.search('\"timestamp\":(.+?),\"', resp.text)
@@ -95,7 +87,7 @@ class BaiduWangpan(object):
         m = re.search('\"fs_id\":(.+?),\"', resp.text)
         self.fidList = '[' + m.group(1) + ']'
 
-    def getVerifyCode(self):  # 获取验证码并要求输入
+    def getVerifyCode(self):
         print u'Start downloading the verification code...'
 
         url = "http://pan.baidu.com/api/getvcode"
@@ -108,22 +100,21 @@ class BaiduWangpan(object):
             'web': '1',
             'app_id': '250528',
         }
-
         resp = self.sess.get(url=url, params=payload, headers=self.headers)
         js = json.loads(resp.text)
         self.verifyCodeStr = js['vcode']
 
-        # 保存验证码
+        # save verify code
         image_file = 'verification_code.jpg'
         resp = self.sess.get(
-            "http://pan.baidu.com/genimage?%s" % self.verifyCodeStr,
+            url="http://pan.baidu.com/genimage?%s" % self.verifyCodeStr,
             headers=self.headers
         )
-        with open (image_file, 'wb') as f:
+        with open(image_file, 'wb') as f:
             for chunk in resp.iter_content(chunk_size=1024):
                 f.write(chunk)
 
-        # 打开验证码图片
+        # open verify code
         if os.name == "nt": 
             os.system('start ' + image_file)  # for Windows
         else:
@@ -134,7 +125,7 @@ class BaiduWangpan(object):
 
         self.verifyCodeInput = str(raw_input(u'Please enter the verification code (return change):'))
 
-    def downloadResp(self, needVerify=False):
+    def getRespJson(self, needVerify=False):
         url = 'http://pan.baidu.com/api/sharedownload'
         payload = {
             'sign': self.sign,
@@ -145,7 +136,6 @@ class BaiduWangpan(object):
             'web': '1',
             'app_id': '250528',
         }
-
         data = {
             'encrypt': '0',
             'product': 'share',
@@ -161,37 +151,30 @@ class BaiduWangpan(object):
         if self.isEncrypt:
             data['extra'] = '{"sekey":"' + urllib.unquote(self.sess.cookies['BDCLND']) + '"}'
 
-        if needVerify:  # 需要验证码
+        if needVerify:
             data['vcode_input'] = self.verifyCodeInput
             data['vcode_str'] = self.verifyCodeStr
 
         resp = self.sess.post(url=url, params=payload, data=data, headers=self.headers)
         return json.loads(resp.text)
 
-    def getDownloadURL(self):
+    def getDownloadLink(self):
         try:
-            self.getBaiduCookie()  # 初始化cookie
-
+            self.initCookie()
             if self.isEncrypt:
-                if not self.verifyPassword():  # 验证文件密码
+                if not self.verifyPassword():  # verify file password
                     print u'Sharing file password error!'
                     return
+            self.getParams()
 
-            self.getParams()  # 密码验证成功后，获取网页的参数
-
-            js = self.downloadResp(needVerify=False)  # 第一次尝试获取下载链接
+            # try to get the download link for the first time (without verify code)
+            js = self.getRespJson(needVerify=False)
             while True:
-                if js['errno'] == 0:  # 获取下载链接成功
-                    if not self.isFolder:
-                        print u'Filename：' + js['list'][0]['server_filename']
-                        print u'Download link：' + js["list"][0]['dlink']
-                        print u'Size：' + str(js['list'][0]['size']/1000000.0) + 'MB'
-                    else:
-                        print js['dlink']
-                    break
-                elif js['errno'] == -20:  # 需要验证码
+                if js['errno'] == 0:  # success
+                    return js['dlink'] if self.isFolder else js["list"][0]['dlink']
+                elif js['errno'] == -20:  # need verify code
                     self.getVerifyCode()
-                    js = self.downloadResp(needVerify=True)
+                    js = self.getRespJson(needVerify=True)  # get the download link with verify code
                 else:
                     print u'Unknown error, the error code is as follows:'
                     print js
@@ -199,6 +182,7 @@ class BaiduWangpan(object):
         except Exception as e:
             print 'Exception:', e
             raise
+
 
 def str2bool(v):
     if v.lower() in ('true', 'yes', 't', 'y'):
@@ -208,12 +192,14 @@ def str2bool(v):
     else:
         raise argparse.ArgumentTypeError('Unsupported value encountered.')
 
+
 def main(options):
-    baiduWangpan = BaiduWangpan(isEncrypt=options.encrypt,
-                                isFolder=options.folder,
-                                link=options.link,
-                                password=options.password)
-    baiduWangpan.getDownloadURL()
+    wangpan = BaiduWangpan(isEncrypt=options.encrypt,
+                           isFolder=options.folder,
+                           link=options.link,
+                           password=options.password)
+    link = wangpan.getDownloadLink()
+    print link
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Get Baidu wangpan private sharing file download link.')
