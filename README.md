@@ -19,46 +19,44 @@
 ## 使用帮助
 
 ```sh
-$ python baidu_wangpan_parse.py -h 
-usage: baidu_wangpan_parse.py [-h] -f [FOLDER] -e [ENCRYPT] -l LINK [-p PASSWORD]
+$ python baidu_wangpan_parse.py -h
+usage: baidu_wangpan_parse.py [-h] [-f] link [password]
 
-Get Baidu wangpan private sharing file download link.
+Get Baidu wangpan sharing file download link.
+
+positional arguments:
+  link          Baidu wangpan sharing file link
+  password      Baidu wangpan sharing file password
 
 optional arguments:
-  -h, --help            show this help message and exit
-  -f [FOLDER], --folder [FOLDER]
-                        Whether the sharing is a folder, input should be either "true" or "false"
-  -e [ENCRYPT], --encrypt [ENCRYPT]
-                        Whether sharing file is encrypted, input should be either "true" or "false"
-  -l LINK, --link LINK  Baidu wangpan sharing file link
-  -p PASSWORD, --password PASSWORD
-                        Baidu wangpan sharing file password
+  -h, --help    show this help message and exit
+  -f, --folder  if sharing file is a folder
 ```
 
 ## 使用实例
 
-1.获取没有加密的单个文件的下载地址：
+1.获取`没有加密`的`单个文件`的下载地址：
 ```sh
-$ python baidu_wangpan_parse.py -f false -e false -l https://pan.baidu.com/s/1dG1NCeH
-http://d.pcs.baidu.com/file/8192bee674d4fa51327b4fcd48419527?fid=271812880-250528-1043814616287203&time=1520084684&rt=sh&sign=FDTAERV-DCb740ccc5511e5e8fedcff06b081203-yNPeLZ6nlAnXIkJCc65h5%2BXyo7o%3D&expires=8h&chkv=1&chkbd=0&chkpc=&dp-logid=1435776569022977819&dp-callid=0&r=908173079
+$ python baidu_wangpan_parse.py https://pan.baidu.com/s/1dG1NCeH
+http://d.pcs.baidu.com/file/8192bee674d4fa51327b4fcd48419527?fid=271812880-250528-1043814616287203&dstime=1529692196&rt=sh&sign=FDtAERV-DCb740ccc5511e5e8fedcff06b081203-X4Fh%2FqJm8VsmmFSfxrvr0Xi%2BWuo%3D&expires=8h&chkv=1&chkbd=0&chkpc=&dp-logid=556008995005344418&dp-callid=0&r=913049239
 ```
 
-2.获取加密的单个文件的下载地址：
+2.获取`加密`的`单个文件`的下载地址：
 ```sh
-$ python baidu_wangpan_parse.py -f false -e true -l https://pan.baidu.com/s/1qZbIVP6 -p xa27
-http://d.pcs.baidu.com/file/db0be336c157d7cd2e1368c7a80833d6?fid=1708072416-250528-674694471059199&time=1520085857&rt=sh&sign=FDTAERV-DCb740ccc5511e5e8fedcff06b081203-GKPsyNzU2hRIFkk20A9uLuqYh10%3D&expires=8h&chkv=1&chkbd=0&chkpc=&dp-logid=1436091295408590002&dp-callid=0&r=130087421
+$ python baidu_wangpan_parse.py https://pan.baidu.com/s/1qZbIVP6 xa27
+http://d.pcs.baidu.com/file/db0be336c157d7cd2e1368c7a80833d6?fid=1708072416-250528-674694471059199&dstime=1529692222&rt=sh&sign=FDtAERV-DCb740ccc5511e5e8fedcff06b081203-elkzjwahMSEUGaVYSsBWYDt9y9I%3D&expires=8h&chkv=1&chkbd=0&chkpc=&dp-logid=556015960669176024&dp-callid=0&r=457285671
 ```
 
-3.获取没有加密的文件夹的打包下载地址
+3.获取`没有加密`的`文件夹`的打包下载地址
 ```sh
-$ python baidu_wangpan_parse.py -f true -e false -l https://pan.baidu.com/s/1jH2KqZs
-http://www.baidupcs.com/rest/2.0/pcs/file?method=batchdownload&app_id=250528&zipcontent=%7B%22fs_id%22%3A%5B%221042134294938382%22%5D%7D&sign=DCb740ccc5511e5e8fedcff06b081203:cSLPyTkEIozr9f4WlXdPv%2FCUCdE%3D&uid=540536034&time=1520268618&dp-logid=1461958037911350750&dp-callid=0&from_uk=540536034
+$ python baidu_wangpan_parse.py -f https://pan.baidu.com/s/1jH2KqZs
+http://www.baidupcs.com/rest/2.0/pcs/file?method=batchdownload&app_id=250528&zipcontent=%7B%22fs_id%22%3A%5B%221042134294938382%22%5D%7D&sign=DCb740ccc5511e5e8fedcff06b081203:%2FJ5CLBRE0lBhZcmtBzONMei1sK0%3D&uid=540536034&time=1529778687&dp-logid=556033318032806103&dp-callid=0&from_uk=540536034
 ```
 
-4.获取加密的文件夹的打包下载地址
+4.获取`加密`的`文件夹`的打包下载地址
 ```sh
-$ python baidu_wangpan_parse.py -f true -e true -l https://pan.baidu.com/s/1htWjWk0 -p 5ykw
-http://www.baidupcs.com/rest/2.0/pcs/file?method=batchdownload&app_id=250528&zipcontent=%7B%22fs_id%22%3A%5B%22680498123896117%22%5D%7D&sign=DCb740ccc5511e5e8fedcff06b081203:XVWOmwcvFUuF%2BaingRW1tMuLJ4w%3D&uid=1708072416&time=1520268935&dp-logid=1462043150724484943&dp-callid=0&from_uk=1708072416
+$ python baidu_wangpan_parse.py -f https://pan.baidu.com/s/1htWjWk0 5ykw
+http://www.baidupcs.com/rest/2.0/pcs/file?method=batchdownload&app_id=250528&zipcontent=%7B%22fs_id%22%3A%5B%22680498123896117%22%5D%7D&sign=DCb740ccc5511e5e8fedcff06b081203:78%2FEazq38BLF8yHif6MAwhSocTs%3D&uid=1708072416&time=1529778722&dp-logid=556042741799663073&dp-callid=0&from_uk=1708072416
 ```
 
 ## 常见问题
@@ -81,4 +79,9 @@ http://www.baidupcs.com/rest/2.0/pcs/file?method=batchdownload&app_id=250528&zip
 ## Todo
 
 - 解析文件夹的下载地址同时获取zip压缩包名字以及大小
-- 精简命令行参数，实现自动识别下载内容是单文件/文件夹，加密/未加密。
+- ~~精简命令行参数，实现自动识别下载内容是单文件/文件夹，加密/未加密~~
+- 修改为Python3版本
+
+# Remark
+
+- 当前测试时间`2018.6.23`。如果失效，请在issue中提出，我会来更新。
