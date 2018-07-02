@@ -88,7 +88,7 @@ class BaiduWangpan(object):
             m = re.search('\"fs_id\":(.+?),\"', resp.text)
             self.fidList = '[' + m.group(1) + ']'
             return True
-        except Exception as e:
+        except Exception:
             return False
 
     def getVerifyCode(self):
@@ -186,7 +186,7 @@ class BaiduWangpan(object):
                     print u'Unknown error, the error code is as follows:'
                     print js
                     return None
-        except Exception:
+        except Exception as e:
             print 'Exception:', e
             raise
 
