@@ -9,7 +9,7 @@
 
 ## 运行环境
 
-- Python 2.7
+- Python3 (兼容Python2)
 
 ## 第三方库
 
@@ -80,8 +80,8 @@ http://www.baidupcs.com/rest/2.0/pcs/file?method=batchdownload&app_id=250528&zip
 
 - 解析文件夹的下载地址同时获取zip压缩包名字以及大小
 - ~~精简命令行参数，实现自动识别下载内容是单文件/文件夹，加密/未加密~~
-- 修改为Python3版本
+- ~~修改为Python3版本~~
 
 ## Remark
 
-- 当前测试时间`2018.6.23`。如果失效，请在issue中提出，我会来更新。
+- 当前测试时间`2018.7.3`。如果失效，请在issue中提出，我会来更新。
