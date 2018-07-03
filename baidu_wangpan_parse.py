@@ -3,22 +3,24 @@
 
 '''
     Python解析百度云分享文件下载链接
-    基于Python2.7
+    兼容Python2/3
 '''
-
+from __future__ import print_function
 import os
 import time
 import re
 import json
 import random
-import urllib
 import argparse
 
 import requests
 
 import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
+if (sys.version_info > (3, 0)):
+    import urllib.parse as parse
+else:
+    import urllib as parse
+    input = raw_input
 
 
 class BaiduWangpan(object):
@@ -49,7 +51,7 @@ class BaiduWangpan(object):
     def verifyPassword(self):  # verify file password
         match = re.match(r'http[s]?://pan.baidu.com/s/1(.*)', self.link)
         if not match:
-            print u'Link match error!'
+            print('Link match error!')
             return False
 
         url = 'https://pan.baidu.com/share/verify'
@@ -92,7 +94,7 @@ class BaiduWangpan(object):
             return False
 
     def getVerifyCode(self):
-        print u'Start downloading the verification code...'
+        print('Start downloading the verification code...')
 
         url = "http://pan.baidu.com/api/getvcode"
         payload = {
@@ -127,7 +129,7 @@ class BaiduWangpan(object):
             else:
                 os.system("open " + image_file)  # for Mac
 
-        self.verifyCodeInput = str(raw_input(u'Please enter the verification code (return change):'))
+        self.verifyCodeInput = input('Please enter the verification code (return change):')
 
     def getRespJson(self, needVerify=False):
         url = 'http://pan.baidu.com/api/sharedownload'
@@ -153,7 +155,7 @@ class BaiduWangpan(object):
             data['type'] = 'batch'
 
         if self.isEncrypt:
-            data['extra'] = '{"sekey":"' + urllib.unquote(self.sess.cookies['BDCLND']) + '"}'
+            data['extra'] = '{"sekey":"' + parse.unquote(self.sess.cookies['BDCLND']) + '"}'
 
         if needVerify:
             data['vcode_input'] = self.verifyCodeInput
@@ -167,11 +169,11 @@ class BaiduWangpan(object):
             self.initCookie()
             if self.isEncrypt:
                 if not self.verifyPassword():  # verify file password
-                    print u'Sharing file password error!'
+                    print('Sharing file password error!')
                     return None
 
             if not self.getParams():
-                print u'It seems that the file needs password'
+                print('It seems that the file needs password.')
                 return None
 
             # try to get the download link for the first time (without verify code)
@@ -183,11 +185,11 @@ class BaiduWangpan(object):
                     self.getVerifyCode()
                     js = self.getRespJson(needVerify=True)  # get the download link with verify code
                 else:
-                    print u'Unknown error, the error code is as follows:'
-                    print js
+                    print('Unknown error, the error code is as follows:')
+                    print(js)
                     return None
         except Exception as e:
-            print 'Exception:', e
+            print('Exception:', e)
             raise
 
 
@@ -197,7 +199,7 @@ def main(options):
                            link=options.link,
                            password=options.password)
     link = wangpan.getDownloadLink()
-    print link
+    print(link)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Get Baidu wangpan sharing file download link.')
