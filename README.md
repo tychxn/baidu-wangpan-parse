@@ -1,5 +1,10 @@
 # 百度网盘分享文件下载链接解析
 
+[![version](https://img.shields.io/badge/python-2.7%2C%203.4%2B-blue.svg)](https://www.python.org) 
+[![status](https://img.shields.io/badge/status-stable-green.svg)](https://github.com/tychxn/baidu-wangpan-parse)
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![star, issue](https://img.shields.io/badge/star%2C%20issue-welcome-brightgreen.svg)](https://github.com/tychxn/baidu-wangpan-parse)
+
 ## 功能
 
 - 获取百度网盘分享文件的真实下载地址
@@ -84,4 +89,4 @@ http://www.baidupcs.com/rest/2.0/pcs/file?method=batchdownload&app_id=250528&zip
 
 ## Remark
 
-- 当前测试时间`2018.7.3`。如果失效，请在issue中提出，我会来更新。
+- 当前测试时间`2018.7.23`。如果失效，请在issue中提出，我会来更新。
