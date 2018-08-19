@@ -20,7 +20,7 @@ class DownloadFileTask(object):
     def download_file(self):
         response = requests.get(self.link, stream=True)
 
-        filename = "file.mobi"
+        filename = "file"
 
         if 'content-disposition' in response.headers:
 
