@@ -19,7 +19,7 @@
 ## 第三方库
 
 - [Requests](http://docs.python-requests.org/en/master/)
-
+- [tqdm](https://github.com/tqdm/tqdm)
 
 ## 使用帮助
 
