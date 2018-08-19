@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import requests
-import re
 from tqdm import tqdm
+
+import re
 import math
+
+import requests
 
 
 class DownloadFileTask(object):
