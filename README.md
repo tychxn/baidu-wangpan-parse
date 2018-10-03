@@ -38,6 +38,11 @@ optional arguments:
   -f, --folder  if sharing file is a folder
 ```
 
+## 注意事项
+
+- 【2018.10.3】百度网盘最近限制了打包下载，当选择的多个文件大于`300M`时会提示`{"error_code":31090,"error_msg":"package is too large","request_id":8704138921699374750}`。因此无法下载过大的文件夹，单个文件下载不受影响。
+
+
 ## 使用实例
 
 1.获取`没有加密`的`单个文件`的下载地址：
@@ -52,16 +57,16 @@ $ python baidu_wangpan_parse.py https://pan.baidu.com/s/1qZbIVP6 xa27
 http://d.pcs.baidu.com/file/db0be336c157d7cd2e1368c7a80833d6?fid=1708072416-250528-674694471059199&dstime=1529692222&rt=sh&sign=FDtAERV-DCb740ccc5511e5e8fedcff06b081203-elkzjwahMSEUGaVYSsBWYDt9y9I%3D&expires=8h&chkv=1&chkbd=0&chkpc=&dp-logid=556015960669176024&dp-callid=0&r=457285671
 ```
 
-3.获取`没有加密`的`文件夹`的打包下载地址
+3.获取`没有加密`的`文件夹`的打包下载地址（小于300M）
 ```sh
-$ python baidu_wangpan_parse.py -f https://pan.baidu.com/s/1jH2KqZs
-http://www.baidupcs.com/rest/2.0/pcs/file?method=batchdownload&app_id=250528&zipcontent=%7B%22fs_id%22%3A%5B%221042134294938382%22%5D%7D&sign=DCb740ccc5511e5e8fedcff06b081203:%2FJ5CLBRE0lBhZcmtBzONMei1sK0%3D&uid=540536034&time=1529778687&dp-logid=556033318032806103&dp-callid=0&from_uk=540536034
+$ python baidu_wangpan_parse.py -f https://pan.baidu.com/s/1hIm_wG-LtGPYQ3lY2ANvxQ
+https://www.baidupcs.com/rest/2.0/pcs/file?method=batchdownload&app_id=250528&zipcontent=%7B%22fs_id%22%3A%5B%22680498123896117%22%5D%7D&sign=DCb740ccc5511e5e8fedcff06b081203:T%2BfekNxcAnRRurxsKdpdzYxHnDk%3D&uid=1708072416&time=1538662289&dp-logid=8705314671792360782&dp-callid=0&shareid=610414498&from_uk=1708072416
 ```
 
-4.获取`加密`的`文件夹`的打包下载地址
+4.获取`加密`的`文件夹`的打包下载地址（小于300M）
 ```sh
 $ python baidu_wangpan_parse.py -f https://pan.baidu.com/s/1htWjWk0 5ykw
-http://www.baidupcs.com/rest/2.0/pcs/file?method=batchdownload&app_id=250528&zipcontent=%7B%22fs_id%22%3A%5B%22680498123896117%22%5D%7D&sign=DCb740ccc5511e5e8fedcff06b081203:78%2FEazq38BLF8yHif6MAwhSocTs%3D&uid=1708072416&time=1529778722&dp-logid=556042741799663073&dp-callid=0&from_uk=1708072416
+https://www.baidupcs.com/rest/2.0/pcs/file?method=batchdownload&app_id=250528&zipcontent=%7B%22fs_id%22%3A%5B%22680498123896117%22%5D%7D&sign=DCb740ccc5511e5e8fedcff06b081203:7w%2BgJ2pcVqrLf4AF9rb9N1Z4hDI%3D&uid=1708072416&time=1538661815&dp-logid=8705187263682751022&dp-callid=0&shareid=185984296&from_uk=1708072416
 ```
 
 ## 常见问题
@@ -81,12 +86,12 @@ http://www.baidupcs.com/rest/2.0/pcs/file?method=batchdownload&app_id=250528&zip
 |118|没有下载权限|
 |121|你选择操作的文件过多，减点试试吧|
 
-## Todo
+## 待办列表
 
 - 解析文件夹的下载地址同时获取zip压缩包名字以及大小
 - ~~精简命令行参数，实现自动识别下载内容是单文件/文件夹，加密/未加密~~
 - ~~修改为Python3版本~~
 
-## Remark
+## 备注
 
-- 当前测试时间`2018.7.23`。如果失效，请在issue中提出，我会来更新。
+- 当前测试时间`2018.10.3`。如果失效，请在issue中提出，我会来更新。
