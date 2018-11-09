@@ -19,6 +19,7 @@
 ## 第三方库
 
 - [Requests](http://docs.python-requests.org/en/master/)
+- [PyCryptodome](https://github.com/Legrandin/pycryptodome)
 - [tqdm](https://github.com/tqdm/tqdm)
 
 ## 使用帮助
@@ -47,7 +48,15 @@ optional arguments:
 
 ## 使用实例
 
-首先在`config.ini`文件中配置你的账号密码：
+下载安装：
+```shell
+git clone https://github.com/tychxn/baidu-wangpan-parse
+cd baidu-wangpan-parse
+pip install -r requirements.txt
+```
+
+
+在`config.ini`文件中配置账号密码：
 ```
 [account]
 username = your_username
@@ -102,4 +111,4 @@ https://www.baidupcs.com/rest/2.0/pcs/file?method=batchdownload&app_id=250528&zi
 
 ## 备注
 
-- 当前测试时间`2018.10.3`。如果失效，请在issue中提出，我会来更新。
+- 当前测试时间`2018.11.09`。如果失效，请在issue中提出，我会来更新。
