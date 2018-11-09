@@ -1,2 +1,4 @@
 requests>=2.20.0
+pycryptodome>=3.6.6
+uuid==1.30
 tqdm==3.7.1
